@@ -43,7 +43,7 @@ class Ad
     /**
      * @ORM\Column(type="text")
      */
-    private $content;
+    private $contenu;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -130,18 +130,6 @@ class Ad
         return $this;
     }
 
-    public function getContent(): ?string
-    {
-        return $this->content;
-    }
-
-    public function setContent(string $content): self
-    {
-        $this->content = $content;
-
-        return $this;
-    }
-
     public function getCoverImage(): ?string
     {
         return $this->coverImage;
@@ -193,6 +181,18 @@ class Ad
                 $image->setAd(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getContenu(): ?string
+    {
+        return $this->contenu;
+    }
+
+    public function setContenu(string $contenu): self
+    {
+        $this->contenu = $contenu;
 
         return $this;
     }

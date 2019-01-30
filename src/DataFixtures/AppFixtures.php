@@ -26,7 +26,7 @@ class AppFixtures extends Fixture
             $ad->setTitle($title)
                 ->setCoverImage($coverImage)
                 ->setIntroduction($introduction)
-                ->setContent($contenu)
+                ->setContenu($contenu)
                 ->setPrice(mt_rand(40, 200))
                 ->setRooms(mt_rand(1, 5));
 
