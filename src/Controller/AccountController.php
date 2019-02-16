@@ -3,7 +3,10 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Form\AccountType;
+use App\Entity\PasswordUpdate;
 use App\Form\RegistrationType;
+use App\Form\PasswordUpdateType;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Common\Persistence\ObjectManager;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,6 +15,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
+/**
+ * Gestion des comptes utilisateurs.
+ */
 class AccountController extends AbstractController
 {
     /**
@@ -86,15 +92,74 @@ class AccountController extends AbstractController
     }
 
     /**
-     * Modification de profil.
+     * Modification du profil.
      *
      * @Route("/account/profile", name="account_profile")
      *
+     * @param Request       $request
+     * @param ObjectManager $manager
+     *
      * @return Response
      */
-    public function profile()
+    public function profile(Request $request, ObjectManager $manager)
     {
+        $user = $this->getUser();
+
+        $form = $this->createForm(AccountType::class, $user);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $manager->persist($user);
+            $manager->flush();
+
+            $this->addFlash(
+                'success',
+                'Votre profil a bien été mis à jour'
+            );
+        }
+
         return $this->render('account/profile.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * Permet de modifier le mot de passe.
+     *
+     * @Route("/account/password-update", name="account_password")
+     *
+     * @param Request                      $request
+     * @param ObjectManager                $manager
+     * @param UserPasswordEncoderInterface $encoder
+     *
+     * @return Response
+     */
+    public function updatePassword(Request $request, ObjectManager $manager, UserPasswordEncoderInterface $encoder)
+    {
+        $passwordUpdate = new PasswordUpdate();
+
+        $user = $this->getUser();
+
+        $form = $this->createForm(PasswordUpdateType::class, $passwordUpdate);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $newPassword = $passwordUpdate->getNewPassword();
+            $hash = $encoder->encodePassword($user, $newPassword);
+            $user->setHash($hash);
+            $manager->persist($user);
+            $manager->flush();
+
+            $this->addFlash(
+                'success',
+                'Votre mot de passe a bien été mis à jour'
+            );
+        }
+
+        return $this->render('account/password.html.twig', [
+            'form' => $form->createView(),
         ]);
     }
 }
