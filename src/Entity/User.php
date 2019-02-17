@@ -83,9 +83,15 @@ class User implements UserInterface
      */
     private $ads;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Role", mappedBy="users")
+     */
+    private $userRoles;
+
     public function __construct()
     {
         $this->ads = new ArrayCollection();
+        $this->userRoles = new ArrayCollection();
     }
 
     /**
@@ -239,9 +245,24 @@ class User implements UserInterface
         return $this;
     }
 
+    /**
+     * Permet de récupérer les différents Rôles.
+     *
+     * @return array
+     */
     public function getRoles()
     {
-        return array('ROLE_USER');
+        //je map sur la collection $userRoles pour en retirer uniquement le Title avec la fonction map()
+        //ensuite transforme le résultat en tableau PHP classique avec la fonction toArray()
+        $roles = $this->userRoles->map(function ($role) {
+            return $role->getTitle();
+        })->toArray();
+
+        //J'ajoute le rôle User au tableau obtenu
+        $roles[] = 'ROLE_USER';
+
+        //je retourne les rôles sous format tableau classique PHP
+        return $roles;
     }
 
     public function getPassword()
@@ -260,5 +281,33 @@ class User implements UserInterface
 
     public function eraseCredentials()
     {
+    }
+
+    /**
+     * @return Collection|Role[]
+     */
+    public function getUserRoles(): Collection
+    {
+        return $this->userRoles;
+    }
+
+    public function addUserRole(Role $userRole): self
+    {
+        if (!$this->userRoles->contains($userRole)) {
+            $this->userRoles[] = $userRole;
+            $userRole->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserRole(Role $userRole): self
+    {
+        if ($this->userRoles->contains($userRole)) {
+            $this->userRoles->removeElement($userRole);
+            $userRole->removeUser($this);
+        }
+
+        return $this;
     }
 }

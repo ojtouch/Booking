@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Ad;
 use Faker\Factory;
+use App\Entity\Role;
 use App\Entity\User;
 use App\Entity\Image;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -19,9 +20,30 @@ class AppFixtures extends Fixture
         $this->encoder = $encoder;
     }
 
-    public function load(ObjectManager $em)
+    /**
+     * Génaration de fausse données.
+     *
+     * @param ObjectManager $manager
+     */
+    public function load(ObjectManager $manager)
     {
         $faker = Factory::create('fr-FR');
+
+        $adminRole = new Role();
+        $adminRole->setTitle('ROLE_ADMIN');
+
+        $manager->persist($adminRole);
+
+        $adminUser = new User();
+        $adminUser->setFirstName('Admin')
+                ->setLastName('User')
+                ->setEmail('admin@booking.fr')
+                ->setHash($this->encoder->encodePassword($adminUser, '123'))
+                ->setPicture('https://randomuser.me/api/portraits/lego/0.jpg')
+                ->setIntroduction($faker->sentence())
+                ->setDescription('<p>'.join('</p><p>', $faker->paragraphs(3)).'</p>')
+                ->addUserRole($adminRole);
+        $manager->persist($adminUser);
 
         //fixtures pour les users
         $users = [];
@@ -47,7 +69,7 @@ class AppFixtures extends Fixture
                 ->setHash($hash)
                 ->setPicture($picture);
 
-            $em->persist($user);
+            $manager->persist($user);
 
             $users[] = $user;
         }
@@ -79,11 +101,11 @@ class AppFixtures extends Fixture
                     ->setCaption($faker->sentence())
                     ->setAd($ad);
 
-                $em->persist($image);
+                $manager->persist($image);
             }
 
-            $em->persist($ad);
+            $manager->persist($ad);
         }
-        $em->flush();
+        $manager->flush();
     }
 }
