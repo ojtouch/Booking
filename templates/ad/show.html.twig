@@ -47,18 +47,22 @@
             </div>
         </div>
         <div class="col">
+        {% set a = ad.author %}
+        {% set url = path('user_show', {'slug': a.slug}) %}
             <div class="row">
-                <div class="col-4">
-                    <img src="http://placehold.it/64x64" alt="avatar de Bernard">
+                <div class="col-3">
+                    <a href="{{ url }}">
+                        <img src="{{a.picture}}" class="avatar avatar-medium" alt="avatar de {{a.fullName}}">
+                    </a>
                 </div>
                 <div class="col">
-                    <h3>Bertrand Dupond</h3>
-                    <span class="badge badge-primary">3 annonces</span>
+                    <a href="{{url}}">
+                        <h3>{{a.fullName}}</h3>
+                    </a>
+                    <span class="badge badge-primary">{{a.ads | length }} annonces</span>
                 </div>
             </div>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Odio deserunt deleniti temporibus maxime error perferendis, doloremque maiores. Asperiores, tempore ipsam.</p>
-            <p>Repellendus veritatis maiores, temporibus sed officia similique doloremque suscipit numquam totam quidem modi accusamus ipsa neque omnis minima ad cupiditate.</p>
-            <p>Labore excepturi voluptate, obcaecati sapiente rem cupiditate itaque, possimus, quae nesciunt temporibus veniam quam consectetur illum quod nihil culpa in.</p>
+            {{a.description | raw }}
         </div>
 
     </div>
