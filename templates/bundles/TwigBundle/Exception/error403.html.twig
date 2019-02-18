@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accès interdit{% endblock %}
+
+{% block body %}
+
+<div class="container">
+    <h1>Vous n'avez pas accès à cette ressource</h1>
+    <p>Vous n'avez pas accès à cette ressource, merci de vous <a href="{{path('account_login')}}">connecter</a> ou de <a href="{{path('account_register')}}">créer un compte</a> </p>
+
+    <a href="{{path('account_login')}}" class="btn btn-primary">Connectez-vous</a>
+    <a href="{{path('account_register')}}" class="btn btn-success">Créer un compte</a>
+</div>
+
+{% endblock %}
