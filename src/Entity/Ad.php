@@ -2,10 +2,11 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Cocur\Slugify\Slugify;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
@@ -86,6 +87,36 @@ class Ad
     {
         $this->images = new ArrayCollection();
         $this->bookings = new ArrayCollection();
+    }
+
+    /**
+     * Permet d'obtenir un tableau des jours qui  ne sont pas disponibles pour cette annonce.
+     *
+     * @return array un Tableau d'objet DateTime représentant les jours d'occupation
+     */
+    public function getNotAvailableDays()
+    {
+        $noteAvailableDays = [];
+
+        foreach ($this->bookings as $booking) {
+            //Calculer les jours qui se trouvente entre la date d'arrivé et la date de départ
+            $resultat = range(
+                $booking->getStartDate()->getTimestamp(),
+                $booking->getEndDate()->getTimestamp(),
+                24 * 60 * 60
+            );
+
+            //transformer ces timestamp en object DateTime
+            $days = array_map(function ($dayTimestamp) {
+                return new \DateTime(date('Y-m-d', $dayTimestamp));
+            }, $resultat);
+
+            //les ajouter au tableau
+            $noteAvailableDays = array_merge($noteAvailableDays, $days);
+        }
+
+        //retourner le tableau
+        return $noteAvailableDays;
     }
 
     /**

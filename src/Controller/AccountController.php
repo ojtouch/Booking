@@ -32,7 +32,7 @@ class AccountController extends AbstractController
      */
     public function login(AuthenticationUtils $utils)
     {
-        //Le login est géré par Symfo. Gérer par le firewall du fichier security.yaml
+        //Le login est géré par Symfo. Géré par le firewall du fichier security.yaml
 
         //Permet de récupérer les erreurs lors de l'authentification
         $error = $utils->getLastAuthenticationError();
@@ -41,7 +41,7 @@ class AccountController extends AbstractController
         $username = $utils->getLastUsername();
 
         return $this->render('account/login.html.twig', [
-            //m'envoi le contenu de la variable $error si elle n'est pas null
+            //Envoi le contenu de la variable $error si elle n'est pas null
             'hasError' => $error !== null,
             'username' => $username,
         ]);
@@ -56,7 +56,7 @@ class AccountController extends AbstractController
      */
     public function logout()
     {
-        //la deconnexion est géré par Symfo. Gérer par le firewall du fichier security.yaml
+        //La deconnexion est gérée par Symfo. Gérée par le firewall du fichier security.yaml
     }
 
     /**
